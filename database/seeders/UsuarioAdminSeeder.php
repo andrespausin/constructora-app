@@ -13,11 +13,20 @@ class UsuarioAdminSeeder extends Seeder
     public function run(): void
     {
         \App\Models\Usuario::create([
-            "dni_nie" => "00000000A",
+            "dni_nie" => "Z3781646Z",
             "nombre" => "Andres",
             'apellido' => 'Pausin',
             'email' => 'candrespausin2001@gmail.com',
+            'telefono' => '600123456',
+            'fecha_nacimiento' => '2001-08-20',
+            'status' => 'baja',
+            'numero_seguridad_social' => '4137656889',
             'password' => 'admin123'
+        ]);
+
+        \App\Models\Rol::create([
+            'nombre' => 'Administrador',
+            'descripcion' => 'Usuario con todos los privilegios del sistema.'
         ]);
     }
 }
