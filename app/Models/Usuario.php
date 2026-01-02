@@ -32,7 +32,10 @@ class Usuario extends Authenticatable implements FilamentUser, HasName
         'email',
         'telefono',
         'fecha_nacimiento',
+        'tipo_usuario',
         'status',
+        'fecha_alta',
+        'fecha_baja',
         'numero_seguridad_social',
         'password',
     ];

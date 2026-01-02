@@ -21,6 +21,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Carbon\Carbon;
 
 // Importacion de la regla de validacion DNI/NIE
 use App\Rules\DniNieValidacion;
@@ -81,12 +82,6 @@ class UsuarioResource extends Resource
                             ]),
                         DatePicker::make('fecha_nacimiento')
                             ->label('Fecha de Nacimiento'),
-                        Select::make('status')
-                            ->label('Estado')
-                            ->options([
-                                'ALTA' => 'Alta',
-                                'BAJA' => 'Baja'
-                            ]),
                         TextInput::make('numero_seguridad_social')
                             ->label('Número de Seguridad Social')
                             ->unique(
@@ -108,7 +103,31 @@ class UsuarioResource extends Resource
                             
                     ])->columns(2),
 
-                
+                Section::make('Información laboral')
+                    ->schema([
+                        Select::make('tipo_usuario')
+                            ->label('Tipo de Usuario')
+                            ->options([
+                                'ADMIN' => 'Administrador',
+                                'JEFE' => 'Jefe',
+                                'TRABAJADOR' => 'Trabajador'
+                            ])
+                            ->required(),
+                        Select::make('status')
+                            ->label('Estado')
+                            ->options([
+                                'ALTA' => 'Alta',
+                                'BAJA' => 'Baja'
+                            ]),
+                        DatePicker::make('fecha_alta')
+                            ->label('Fecha de Alta')
+                            ->default(Carbon::now())
+                            ->required(),
+                        DatePicker::make('fecha_baja')
+                            ->label('Fecha de Baja')
+                            ->nullable(),
+                    ])->columns(2),
+
                 Section::make('Seguridad')
                     ->schema([
                         TextInput::make('email')
@@ -151,6 +170,20 @@ class UsuarioResource extends Resource
                 ->label('Fecha de Nacimiento')
                 ->sortable()
                 ->searchable(),
+                TextColumn::make('tipo_usuario')
+                ->label('Tipo de Usuario')
+                ->formatStateUsing(fn (string $state): string => match($state) {
+                    'ADMIN' => 'Administrador',
+                    'JEFE' => 'Jefe',
+                    'TRABAJADOR' => 'Trabajador',
+                    default => $state,
+                })
+                ->sortable()
+                ->searchable(),
+                TextColumn::make('fecha_alta')
+                ->label('Fecha de Alta'),
+                TextColumn::make('fecha_baja')
+                ->label('Fecha de Baja'),
                 TextColumn::make('numero_seguridad_social')
                 ->label('Nº Seguridad Social'),
                 TextColumn::make('roles.nombre')

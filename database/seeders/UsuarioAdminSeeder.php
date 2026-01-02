@@ -20,7 +20,8 @@ class UsuarioAdminSeeder extends Seeder
             'telefono' => '600123456',
             'fecha_nacimiento' => '2001-08-20',
             'status' => 'baja',
-            'numero_seguridad_social' => '4137656889',
+            'numero_seguridad_social' => '041084366164',
+            'tipo_usuario' => 'ADMIN',
             'password' => 'admin123'
         ]);
 
