@@ -7,36 +7,34 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class NumeroSeguridadSocialValido implements ValidationRule
 {
-    /**
-     * Run the validation rule.
-     *
-     * @param  \Closure(string, ?string=): \Illuminate\Translation\PotentiallyTranslatedString  $fail
-     */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        // 1. Normalizar SOLO para validar (no modificar estado)
-        $nss = preg_replace('/[\s-]/', '', (string) $value);
+        $value = preg_replace('/\s+/', '', $value);
 
-        // 2. Debe ser exactamente 12 dígitos
-        if (!preg_match('/^\d{12}$/', $nss)) {
-            $fail('El número de la Seguridad Social debe tener exactamente 12 dígitos.');
+        // Aceptar solo 10 o 12 dígitos
+        if (!preg_match('/^\d{10}|\d{12}$/', $value)) {
+            $fail('El número de la Seguridad Social debe tener 10 o 12 dígitos.');
             return;
         }
 
-        // 3. Validar provincia
-        $provincia = (int) substr($nss, 0, 2);
-        if ($provincia < 1 || $provincia > 52) {
-            $fail('El código de provincia del número de Seguridad Social no es válido.');
-            return;
+        $provincia = substr($value, 0, 2);
+
+        if (strlen($value) === 10) {
+            // NSS antiguo
+            $numero = substr($value, 2, 6);
+            $numero = str_pad($numero, 8, '0', STR_PAD_LEFT);
+            $control = substr($value, 8, 2);
+        } else {
+            // NSS moderno
+            $numero = substr($value, 2, 8);
+            $control = substr($value, 10, 2);
         }
 
-        // 4. Validar dígitos de control
-        $base = (int) substr($nss, 0, 10);
-        $control = (int) substr($nss, 10, 2);
+        $base = intval($provincia . $numero);
+        $controlCalculado = str_pad($base % 97, 2, '0', STR_PAD_LEFT);
 
-        if (($base % 97) !== $control) {
+        if ($controlCalculado !== $control) {
             $fail('El número de la Seguridad Social no es válido.');
         }
     }
-
 }
