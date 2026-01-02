@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 class Usuario extends Authenticatable implements FilamentUser, HasName
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -34,6 +36,16 @@ class Usuario extends Authenticatable implements FilamentUser, HasName
         'numero_seguridad_social',
         'password',
     ];
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Rol::class,
+            'usuario_rol',
+            'dni_nie',
+            'rol_id'
+        );
+    }
 
     public function getAuthIdentifierName()
     {
