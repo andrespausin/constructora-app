@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('dni_nie', 15);
             $table->foreign('dni_nie')->references('dni_nie')->on('usuarios');
-            $table->foreignId('role_id')->constrained('roles');
+            $table->foreignId('rol_id')->constrained('roles');
             $table->timestamps();
         });
     }
