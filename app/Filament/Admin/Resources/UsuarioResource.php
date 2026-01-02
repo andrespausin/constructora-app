@@ -18,6 +18,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -53,7 +54,10 @@ class UsuarioResource extends Resource
                                 ignoreRecord: true
                             )
                             ->live(onBlur: true)
-                            ->rule(new DniNieValidacion()),
+                            ->rule(new DniNieValidacion())
+                            ->validationMessages([
+                                'unique' => 'El DNI/NIE ya está registrado en el sistema'
+                            ]),
                         TextInput::make('nombre')
                             ->label('Nombre')
                             ->required(),
@@ -90,13 +94,18 @@ class UsuarioResource extends Resource
                                 column: 'numero_seguridad_social',
                                 ignoreRecord: true
                             )
-                            ->rules([
-                                new NumeroSeguridadSocialValido()
-                            ])
+                            ->rule(new NumeroSeguridadSocialValido())
                             ->placeholder('281234567890')
                             ->live(onBlur:true)
                             ->dehydrateStateUsing(fn ($state) => preg_replace('/[\s-]/', '', $state))
-                            ->helperText('Formato: 12 dígitos. Ej: 281234567890')
+                            ->helperText('Formato: 12 dígitos. Ej: 281234567890'),
+                        Select::make('roles')
+                            ->label('Rol del usuario')
+                            ->relationship('roles', 'nombre')
+                            ->options(function () {
+                                return \App\Models\Rol::all()->pluck('nombre', 'id')->toArray();
+                            })
+                            
                     ])->columns(2),
 
                 
@@ -124,26 +133,30 @@ class UsuarioResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('dni_nie')
+                TextColumn::make('dni_nie')
                 ->label('DNI/NIE')
                 ->searchable(),
-                Tables\Columns\TextColumn::make('nombre')
+                TextColumn::make('nombre')
                 ->sortable(),
-                Tables\Columns\TextColumn::make('apellido')
+                TextColumn::make('apellido')
                 ->sortable(),
-                Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('telefono')
+                TextColumn::make('email'),
+                TextColumn::make('telefono')
                 ->label('Teléfono'),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                 ->label('Estatus')
                 ->sortable()
                 ->searchable(),
-                Tables\Columns\TextColumn::make('fecha_nacimiento')
+                TextColumn::make('fecha_nacimiento')
                 ->label('Fecha de Nacimiento')
                 ->sortable()
                 ->searchable(),
-                Tables\Columns\TextColumn::make('numero_seguridad_social')
-                ->label('Nº Seguridad Social')
+                TextColumn::make('numero_seguridad_social')
+                ->label('Nº Seguridad Social'),
+                TextColumn::make('roles.nombre')
+                ->label('Roles')
+                ->badge()
+                ->separator(', ')
             ])
             ->filters([
                 //
