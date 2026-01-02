@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 return new class extends Migration
 {
@@ -19,8 +20,16 @@ return new class extends Migration
             $table->string('password');
             $table->string('telefono', 20)->nullable();
             $table->date('fecha_nacimiento')->nullable();
+
+            $table->enum('tipo_usuario', ['ADMIN', 'JEFE', 'TRABAJADOR']);
             $table->enum('status', ['ALTA', 'BAJA'])->default('ALTA');
+            $table->date('fecha_alta')->default(Carbon::now());
+            $table->date('fecha_baja')->nullable();
+
             $table->string('numero_seguridad_social', 20)->unique()->nullable();
+            $table->string('descripcion', 500)->nullable();
+
+            $table->string('created_by', 100)->nullable();
             $table->timestamps();            
         });
     }
