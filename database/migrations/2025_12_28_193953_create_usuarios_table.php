@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('apellido', 100);
             $table->string('email', 100)->unique();
             $table->string('password');
+            $table->string('remember_token', 100)->nullable();
             $table->string('telefono', 20)->nullable();
             $table->date('fecha_nacimiento')->nullable();
 
