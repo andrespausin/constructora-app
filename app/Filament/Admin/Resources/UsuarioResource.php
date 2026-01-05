@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 
 use App\Models\Usuario;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Get;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
@@ -92,14 +93,15 @@ class UsuarioResource extends Resource
                             ->rule(new NumeroSeguridadSocialValido())
                             ->placeholder('281234567890')
                             ->live(onBlur:true)
-                            ->dehydrateStateUsing(fn ($state) => preg_replace('/[\s-]/', '', $state))
-                            ->helperText('Formato: 12 dígitos. Ej: 281234567890'),
-                        Select::make('roles')
-                            ->label('Rol del usuario')
-                            ->relationship('roles', 'nombre')
-                            ->options(function () {
-                                return \App\Models\Rol::all()->pluck('nombre', 'id')->toArray();
-                            })
+                            ->dehydrateStateUsing(fn ($state) => preg_replace('/[\s-]/', '', $state)),
+                            // ->helperText('Formato: 12 dígitos. Ej: 281234567890'),
+                        Select::make('carnet_conducir')
+                            ->label('¿Tiene carnet de conducir?')
+                            ->options([
+                                true => 'Sí',
+                                false => 'No'
+                            ])
+                            ->default(false),
                             
                     ])->columns(2),
 
@@ -126,6 +128,17 @@ class UsuarioResource extends Resource
                         DatePicker::make('fecha_baja')
                             ->label('Fecha de Baja')
                             ->nullable(),
+                        Textarea::make('descripcion')
+                            ->label('Descripción')
+                            ->rows(3)
+                            ->maxLength(500)
+                            ->placeholder('Información adicional sobre el usuario...'),
+                        Select::make('roles')
+                            ->label('Rol del usuario')
+                            ->relationship('roles', 'nombre')
+                            ->options(function () {
+                                return \App\Models\Rol::all()->pluck('nombre', 'id')->toArray();
+                            }),
                     ])->columns(2),
 
                 Section::make('Seguridad')
@@ -186,6 +199,9 @@ class UsuarioResource extends Resource
                 ->label('Fecha de Baja'),
                 TextColumn::make('numero_seguridad_social')
                 ->label('Nº Seguridad Social'),
+                TextColumn::make('carnet_conducir')
+                ->label('Carnet de Conducir')
+                ->formatStateUsing(fn (bool $state): string => $state ? 'Sí' : 'No'),
                 TextColumn::make('roles.nombre')
                 ->label('Roles')
                 ->badge()

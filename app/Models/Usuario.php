@@ -50,6 +50,16 @@ class Usuario extends Authenticatable implements FilamentUser, HasName
         );
     }
 
+    public function oficios(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Oficio::class,
+            'dni_nie',
+            'id_oficio',
+            'nombre_oficio'
+        );
+    }
+
     public function getAuthIdentifierName()
     {
     return 'dni_nie';
